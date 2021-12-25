@@ -2,26 +2,29 @@ pico-8 cartridge // http://www.pico-8.com
 version 34
 __lua__
 function _init()
+ cls()
 	vehicles={}
 	add_vehicle()
+	target={x=100,y=100}
 end
 
 function _update60()
  foreach(vehicles,upd_vehicles)
+ foreach(vehicles,seek)
 end
 
 function _draw()
-	cls(7)
+ cls()
 	foreach(vehicles,drw_vehicles)
+	circfill(target.x,target.y,5,2)
 end
 -->8
 function add_vehicle()
 	add(vehicles,{
 		c={x=20,y=20},
-	 v={x=0.2,y=0.2},
-		draw=function(self)
-			pset(self.x,self.y,8)
-		end
+	 v={x=0.9,y=0},
+	 a={x=0.0,y=0.02},
+	 vmax=4,
 		})
 end
 
@@ -31,6 +34,11 @@ end
 
 function upd_vehicles(obj)
  obj.c=v_addv(obj.c,obj.v)
+ obj.v=v_addv(obj.v,obj.a)
+end
+
+function seek(obj)
+	local desired = v_subv(target,obj.c)
 end
 -->8
 --methods for handling math between 2d vectors

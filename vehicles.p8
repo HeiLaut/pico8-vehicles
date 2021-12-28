@@ -21,11 +21,15 @@ end
 -->8
 function add_vehicle()
 	add(vehicles,{
-		c={x=20,y=20},
-	 v={x=0.9,y=0},
-	 a={x=0.0,y=0.02},
+		c={x=10,y=10},
+	 v={x=2,y=2},
+	 a={x=0,y=0},
 	 vmax=4,
 		})
+end
+
+function apply_force(obj,force)
+	 obj.a=v_addv(obj.a,force)
 end
 
 function drw_vehicles(obj)
@@ -34,11 +38,13 @@ end
 
 function upd_vehicles(obj)
  obj.c=v_addv(obj.c,obj.v)
- obj.v=v_addv(obj.v,obj.a)
 end
 
 function seek(obj)
 	local desired = v_subv(target,obj.c)
+	desired=v_normalize(desired)
+	local steer=v_subv(desired,obj.v)
+	apply_force(obj,steer)
 end
 -->8
 --methods for handling math between 2d vectors

@@ -4,27 +4,37 @@ __lua__
 function _init()
  cls()
 	vehicles={}
-	add_vehicle()
-	target={x=100,y=100}
+	for i =1 , 100 do
+			add_vehicle()
+	end
+	target={x=90,y=60}
+	attract=1
 end
 
 function _update60()
  foreach(vehicles,upd_vehicles)
- foreach(vehicles,seek)
+ if(btn(⬆️))target.y-=2
+ if(btn(⬇️))target.y+=2
+ if(btn(⬅️))target.x-=2
+ if(btn(➡️))target.x+=2
+ if(btnp(❎))attract=-1
+ if(btnp(🅾️))attract=1
+ target.x=target.x%128
+ target.y=target.y%128
 end
 
 function _draw()
  cls()
+ circfill(target.x,target.y,3,9+attract)
 	foreach(vehicles,drw_vehicles)
-	circfill(target.x,target.y,5,2)
 end
 -->8
 function add_vehicle()
 	add(vehicles,{
-		c={x=50,y=10},
-	 v={x=1,y=0},
+		c={x=rnd(128),y=rnd(128)},
+	 v={x=rnd(1),y=rnd(1)},
 	 a={x=0,y=0},
-	 vmax=4,
+	 vmax=rnd(1.5)+0.2,
 		})
 end
 
@@ -34,23 +44,28 @@ function apply_force(obj,force)
 end
 
 function drw_vehicles(obj)
-	circ(obj.c.x,obj.c.y,8)
-	line(obj.c.x,obj.c.y,obj.c.x+obj.v.x,obj.c.y+obj.v.y,8)
+	circfill(obj.c.x,obj.c.y,1,8)
+	line(obj.c.x,obj.c.y,(obj.c.x+obj.v.x*4),(obj.c.y+4*obj.v.y),8)
+
 end
 
 function upd_vehicles(obj)
  obj.v=v_addv(obj.v,obj.a)
  obj.c=v_addv(obj.c,obj.v)
+	obj.a.x, obj.a.y = 0,0
+//steering
+ local desired=v_subv(target,obj.c)
+ desired=v_normalize(desired)
+ desired.x=attract*desired.x*obj.vmax
+ desired.y=attract*desired.y*obj.vmax
+ local steer=v_subv(desired,obj.v)
+ steer.x=mid(-0.02,steer.x,0.02)
+ steer.y=mid(-0.02,steer.y,0.02)
+ apply_force(obj,steer)
+ //obj.c.x=obj.c.x%128
+ //obj.c.y=obj.c.y%128
 end
 
-function seek(obj)
-	local desired = v_subv(target,obj.c)
-	desired=v_normalize(desired)
-	desired.x=desired.x
-	desired.y=desired.y
-	local steer=v_subv(desired,obj.v)
-	apply_force(obj,steer)
-end
 -->8
 --methods for handling math between 2d vectors
 -- vectors are tables with x,y variables inside

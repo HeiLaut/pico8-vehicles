@@ -4,29 +4,33 @@ __lua__
 function _init()
  cls()
 	vehicles={}
-	for i =1 , 100 do
+	attractors={}
+	for i =1 , 60 do
 			add_vehicle()
 	end
-	target={x=90,y=60}
-	attract=1
+	for i=1, 2 do
+		add_attractor()
+	end
+	a=attractors[1]
+	
 end
 
 function _update60()
  foreach(vehicles,upd_vehicles)
- if(btn(⬆️))target.y-=2
- if(btn(⬇️))target.y+=2
- if(btn(⬅️))target.x-=2
- if(btn(➡️))target.x+=2
- if(btnp(❎))attract=-1
- if(btnp(🅾️))attract=1
- target.x=target.x%128
- target.y=target.y%128
+ foreach(attractors,upd_vehicles)
+ if(btn(⬆️))a.c.y-=2
+ if(btn(⬇️))a.c.y+=2
+ if(btn(⬅️))a.c.x-=2
+ if(btn(➡️))a.c.x+=2
+ if(btnp(❎))a.at=-1
+ if(btnp(🅾️))a.at=1
+
 end
 
 function _draw()
  cls()
- circfill(target.x,target.y,3,9+attract)
 	foreach(vehicles,drw_vehicles)
+	foreach(attractors,drw_attractor)
 end
 -->8
 function add_vehicle()
@@ -38,6 +42,16 @@ function add_vehicle()
 		})
 end
 
+function add_attractor()
+	add(attractors,{
+		c={x=rnd(128),y=rnd(128)},
+		at=rnd{-1,1},
+	 v={x=rnd(1)-1,y=rnd(1)-1},
+	 a={x=0,y=0},
+	 //vmax=rnd(1.5)+0.2,
+		})
+end
+
 function apply_force(obj,force)
 	 obj.a=v_addv(obj.a,force)
 	 
@@ -46,27 +60,43 @@ end
 function drw_vehicles(obj)
 	circfill(obj.c.x,obj.c.y,1,8)
 	line(obj.c.x,obj.c.y,(obj.c.x+obj.v.x*4),(obj.c.y+4*obj.v.y),8)
+end
 
+function drw_attractor(obj)
+	circfill(obj.c.x,obj.c.y,3,8-obj.at)
+end
+
+function steer(attr,obj)
+	local desired=v_subv(attr.c,obj.c)
+ local dist=v_mag(desired)
+ desired=v_normalize(desired)
+ desired=v_mults(desired,attr.at*obj.vmax)
+ local steer=v_subv(desired,obj.v)
+ steer.x=mid(-0.02,steer.x,0.02)
+ steer.y=mid(-0.02,steer.y,0.02)
+ apply_force(obj,steer)
 end
 
 function upd_vehicles(obj)
  obj.v=v_addv(obj.v,obj.a)
  obj.c=v_addv(obj.c,obj.v)
 	obj.a.x, obj.a.y = 0,0
-//steering
- local desired=v_subv(target,obj.c)
- desired=v_normalize(desired)
- desired.x=attract*desired.x*obj.vmax
- desired.y=attract*desired.y*obj.vmax
- local steer=v_subv(desired,obj.v)
- steer.x=mid(-0.02,steer.x,0.02)
- steer.y=mid(-0.02,steer.y,0.02)
- apply_force(obj,steer)
- //obj.c.x=obj.c.x%128
- //obj.c.y=obj.c.y%128
+ if obj.at == nil then
+ 	for at in all(attractors) do
+ 		steer(at,obj)
+ 	end
+// else
+ 	//obj.c.x=obj.c.x%128
+ 	//obj.c.y=obj.c.y%128
+ end
+ if(obj.c.x<0 or obj.c.x>128) obj.v.x*=-1
+ if(obj.c.y<0 or obj.c.y>128) obj.v.y*=-1
+
 end
 
 -->8
+
+
 --methods for handling math between 2d vectors
 -- vectors are tables with x,y variables inside
 

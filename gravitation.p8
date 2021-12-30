@@ -4,19 +4,30 @@ __lua__
 function _init()
  cls()
 	vehicles={}
-	for i=1,10 do
+	targets={}
+	for i=1,20 do
 		add_vehicle()
 	end
-	target={x=60,y=60}
+	for i=1,3 do
+		add_targets()
+	end
+	a=targets[1]
+
 end
 
-function _update60()
+function _update()
  foreach(vehicles,upd_vehicles)
+ if(btn(➡️))a.x+=2
+  if(btn(⬅️))a.x-=2
+   if(btn(⬇️))a.y+=2
+    if(btn(⬆️))a.y-=2
 end
 
 function _draw()
- //cls()
+ cls()
 	foreach(vehicles,drw_vehicles)
+	foreach(targets,drw_targets)
+
 end
 -->8
 function add_vehicle()
@@ -25,11 +36,19 @@ function add_vehicle()
 	 v={x=rnd(1),y=rnd(1)},
 	 a={x=0,y=0},
 	 vmax=4,
+	 col=rnd(17)
 		})
 end
 
+function add_targets()
+	add(targets,{
+		x=rnd(90)+20,
+		y=rnd(90)+20
+		}
+		)
+end
+
 function apply_force(obj,force)
-		obj.a.x, obj.a.y = 0,0
 	 obj.a=v_addv(obj.a,force)
 	 
 end
@@ -38,7 +57,7 @@ function calc_force(tar,obj)
 	local vec=v_subv(tar,obj.c)
 	local dist=v_mag(vec)
 	vec = v_normalize(vec)
-	local a = v_mults(vec,1/dist)
+	local a = v_mults(vec,1/(dist))
 	return a
 	
 end
@@ -46,16 +65,21 @@ end
 function upd_vehicles(obj)
  obj.v=v_addv(obj.v,obj.a)
  obj.c=v_addv(obj.c,obj.v)
- apply_force(obj,calc_force(target,obj))
+	obj.a.x, obj.a.y = 0,0
+
+ for target in all(targets) do
+	 apply_force(obj,calc_force(target,obj))
+	end
 end
 
 
 function drw_vehicles(obj)
-//	circ(obj.c.x,obj.c.y,2)
-	pset(obj.c.x,obj.c.y,8)
-//	line(obj.c.x,obj.c.y,(obj.c.x+obj.v.x*4),(obj.c.y+4*obj.v.y),8)
-	pset(target.x,target.y)
-	
+	pset(obj.c.x,obj.c.y,obj.col)
+// line(obj.c.x,obj.c.y,(obj.c.x+obj.v.x*4),(obj.c.y+4*obj.v.y),obj.col)
+end
+
+function drw_targets(obj)
+	circfill(obj.x,obj.y,2,7)
 end
 -->8
 --methods for handling math between 2d vectors

@@ -55,9 +55,9 @@ end
 
 function calc_force(tar,obj)
 	local vec=v_subv(tar,obj.c)
-	local dist=v_mag(vec)
+	local distsq=v_magsqr(vec)
 	vec = v_normalize(vec)
-	local a = v_mults(vec,1/(dist))
+	local a = v_mults(vec,10/(distsq))
 	return a
 	
 end

@@ -5,17 +5,17 @@ function _init()
  cls()
 	vehicles={}
 	targets={}
-	for i=1,20 do
+	for i=1,200 do
 		add_vehicle()
 	end
-	for i=1,3 do
+	for i=1,2 do
 		add_targets()
 	end
 	a=targets[1]
 
 end
 
-function _update()
+function _update60()
  foreach(vehicles,upd_vehicles)
  if(btn(➡️))a.x+=2
   if(btn(⬅️))a.x-=2
@@ -36,7 +36,8 @@ function add_vehicle()
 	 v={x=rnd(1),y=rnd(1)},
 	 a={x=0,y=0},
 	 vmax=4,
-	 col=rnd(17)
+	 col=rnd(17),
+	 m=rnd(5)
 		})
 end
 
@@ -49,6 +50,7 @@ function add_targets()
 end
 
 function apply_force(obj,force)
+		force=v_mults(force,10/obj.m)
 	 obj.a=v_addv(obj.a,force)
 	 
 end
@@ -74,7 +76,7 @@ end
 
 
 function drw_vehicles(obj)
-	pset(obj.c.x,obj.c.y,obj.col)
+	circfill(obj.c.x,obj.c.y,obj.m/2,obj.col)
 // line(obj.c.x,obj.c.y,(obj.c.x+obj.v.x*4),(obj.c.y+4*obj.v.y),obj.col)
 end
 

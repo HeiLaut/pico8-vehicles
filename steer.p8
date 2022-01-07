@@ -39,6 +39,7 @@ function add_vehicle()
 	 v={x=rnd(1),y=rnd(1)},
 	 a={x=0,y=0},
 	 vmax=rnd(1.5)+0.2,
+	 max_force=rnd(0.01)+0.01
 		})
 end
 
@@ -46,7 +47,7 @@ function add_attractor()
 	add(attractors,{
 		c={x=rnd(128),y=rnd(128)},
 		at=rnd{-1,1},
-	 v={x=rnd(1)-1,y=rnd(1)-1},
+	 v={x=0,y=0},//{x=rnd(1)-1,y=rnd(1)-1},
 	 a={x=0,y=0},
 	 //vmax=rnd(1.5)+0.2,
 		})
@@ -58,8 +59,9 @@ function apply_force(obj,force)
 end
 
 function drw_vehicles(obj)
-	circfill(obj.c.x,obj.c.y,1,8)
-	line(obj.c.x,obj.c.y,(obj.c.x+obj.v.x*4),(obj.c.y+4*obj.v.y),8)
+	circfill(obj.c.x,obj.c.y,0.015/obj.max_force,8)
+	line(obj.c.x,obj.c.y,(obj.c.x+obj.v.x*8),(obj.c.y+8*obj.v.y),8)
+//	print(obj.max_force,obj.c.x,obj.c.y)
 end
 
 function drw_attractor(obj)
@@ -72,8 +74,8 @@ function steer(attr,obj)
  desired=v_normalize(desired)
  desired=v_mults(desired,attr.at*obj.vmax)
  local steer=v_subv(desired,obj.v)
- steer.x=mid(-0.02,steer.x,0.02)
- steer.y=mid(-0.02,steer.y,0.02)
+ steer.x=mid(-obj.max_force,steer.x,obj.max_force)
+ steer.y=mid(-obj.max_force,steer.y,obj.max_force)
  apply_force(obj,steer)
 end
 

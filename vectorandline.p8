@@ -1,19 +1,54 @@
 pico-8 cartridge // http://www.pico-8.com
 version 34
 __lua__
-function path(p,close=false)
-	for i =1,#p-1 do
-	 line(p[i].x,p[i].y,p[i+1].x,p[i+1].y)
+-- path with vectors in table
+-- {x=..,y=..}
+function path_v(p,col,close)
+ -- p path vectors
+ -- col color
+ -- close bool open or closed line
+	for i=1,#p-1 do
+	 local a,b=p[i],p[i+1]
+	 line(a.x,a.y,b.x,b.y,col)
  end
- if close=true
+ if close then
+ 	line(p[1].x,p[1].y,p[#p].y,p[#p].y,col)
+ end
 end
 
-function vec(tab)
-	return({x=tab[1],y=tab[2]})
+-- path with points in table
+-- {..,..}
+function path(p,col,close)
+ -- p path vectors
+ -- col color
+ -- close bool open or closed line
+	for i=1,#p-1 do
+	 local a,b=p[i],p[i+1]
+	 line(a[1],a[2],b[1],b[2],col)
+	end
+	if close then
+ 	line(p[1][1],p[1][2],p[#p][1],p[#p][2],col)
+ end
 end
-cls()
-points={vec{5,5},vec{1,20},vec{20,20},vec{0,0}}
-path(points)
+
+--make a vector from points
+function vec(x,y)
+	return({x=x,y=y})
+end
+
+	cls()
+
+	points={vec(5,5),vec(1,20),vec(20,20)}
+	path_v(points,8,true)
+
+	points={
+									{30,100},
+									{10,40},
+									{rnd(100),rnd(100)},
+									{rnd(100),rnd(100)}
+									}
+	path(points,7,true)
+
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000

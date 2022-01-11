@@ -32,9 +32,9 @@ end
 -->8
 function add_vehicle()
 	add(vehicles,{
-		c={x=rnd(128),y=rnd(128)},
-	 v={x=rnd(1),y=rnd(1)},
-	 a={x=0,y=0},
+		c=vec(rnd(128),rnd(128)),
+	 v=vec(rnd(1),rnd(1)),
+	 a=vec(0,0),
 	 vmax=4,
 	 col=rnd(17),
 	 m=rnd(5)
@@ -42,10 +42,8 @@ function add_vehicle()
 end
 
 function add_targets()
-	add(targets,{
-		x=rnd(90)+20,
-		y=rnd(90)+20
-		}
+	add(targets,
+		vec(rnd(90)+20,rnd(90)+20)
 		)
 end
 
@@ -67,7 +65,7 @@ end
 function upd_vehicles(obj)
  obj.v=v_addv(obj.v,obj.a)
  obj.c=v_addv(obj.c,obj.v)
-	obj.a.x, obj.a.y = 0,0
+ obj.a=vec(0,0)
 
  for target in all(targets) do
 	 apply_force(obj,calc_force(target,obj))
@@ -90,6 +88,10 @@ end
 -- contributors: warrenm
 
 -- add v1 to v2
+
+function vec(x,y)
+	return({x=x,y=y})
+end
 
 function v_addv( v1, v2 )
   return { x = v1.x + v2.x, y = v1.y + v2.y }
